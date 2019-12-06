@@ -2,7 +2,7 @@
 
   glUtils.SL.init({ callback: function() { main(); }});
   var gl, program, canvas;
-  var vColor, vPosition, vPosition2, vNormal, vTexCoord;
+  var vColor, vPosition, vPosition2, vNormal, vTexCoord, dd;
   function main() {
     canvas = document.getElementById("glcanvas");
     gl = glUtils.checkWebGL(canvas);
@@ -33,23 +33,22 @@
       10.0, // far  
     );
     gl.uniformMatrix4fv(pmLoc, false, pm);
-
+    
+    
     //uniform untuk pencahayaan
     var dcLoc = gl.getUniformLocation(program, 'diffuseColor');
     var dc = glMatrix.vec3.fromValues(1.0, 1.0, 1.0);  //rgb
     gl.uniform3fv(dcLoc, dc);
-
+    
     var ddLoc = gl.getUniformLocation(program, 'diffusePosition');
-    var dd = glMatrix.vec3.fromValues(1.0, 2.0, 1.7);  //xyz
-    gl.uniform3fv(ddLoc, dd);
-
+    
     var aLoc = gl.getUniformLocation(program, 'ambientColor');
-    var ac = glMatrix.vec3.fromValues(0.2, 0.2, 0.2);
+    var ac = glMatrix.vec3.fromValues(0.17, 0.41, 0.13);
     gl.uniform3fv(aLoc, ac);
-
+    
     // uniform untuk modelMatrix vektor normal
     var nmLoc = gl.getUniformLocation(program, 'normalMatrix');
-
+    
     // Kontrol menggunakan keyboard
     function onKeyDown(event) {
       if (event.keyCode == 189) thetaSpeed -= 0.01;       // key '-'
@@ -64,7 +63,7 @@
       else if (event.keyCode == 39) camera.x += 0.1;
     }
     document.addEventListener('keydown', onKeyDown);
-
+    
     // Membuat sambungan untuk uniform
     var thetaUniformLocation = gl.getUniformLocation(program, 'theta');
     var theta = 0;
@@ -86,31 +85,33 @@
     var dirZ = 1.0;
     var mode = 0.0;
     var modeUniformLocation;
-
+    
     function render() {
-      gl.clearColor(0.0, 0.5, 0.3, 1.0);
+      gl.clearColor(0.0, 0.1, 0.4, 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       modeUniformLocation = gl.getUniformLocation(program,'mode');
-
+      
+      
       theta += thetaSpeed;
       if (axis[z]) glMatrix.mat4.rotateZ(mm, mm, thetaSpeed);
       if (axis[y]) glMatrix.mat4.rotateY(mm, mm, thetaSpeed);
       if (axis[x]) glMatrix.mat4.rotateX(mm, mm, thetaSpeed);
       gl.uniformMatrix4fv(mmLoc, false, mm);
-
+      
+      
       alpha += 0.1;
       gl.uniform1f(alphaUniformLocation,alpha);
-
+      
       if(transX >= 0.6) dirX = -1.0;
       else if (transX <= -0.6) dirX = 1.0;
       transX += 0.03 * dirX;
       gl.uniform1f(transXUniformLocation,transX);
-
+      
       if(transY >= 0.475) dirY = -1.0;
       else if (transY <= -0.475) dirY = 1.0;
       transY += 0.025 * dirY;
       gl.uniform1f(transYUniformLocation,transY);
-
+      
       if(transZ >= 0.6) dirZ = -1.0;
       else if (transZ <= -0.6) dirZ = 1.0;
       transZ += 0.02 * dirZ;
@@ -120,6 +121,9 @@
       glMatrix.mat3.normalFromMat4(nm, mm);
       gl.uniformMatrix3fv(nmLoc, false, nm);
 
+      dd = glMatrix.vec3.fromValues(transX, transY, transZ);  //xyz
+      gl.uniform3fv(ddLoc, dd);
+      
       glMatrix.mat4.lookAt(vm,
         [camera.x, camera.y, camera.z], // di mana posisi kamera (posisi)
         [0.0, 0.0, -2.0], // ke mana kamera menghadap (vektor)
@@ -165,7 +169,7 @@
     
     // Asynchronously load an image
     var image = new Image();
-    image.src = "images/txStainglass.bmp";
+    image.src = "images/Untitled.png";
     image.addEventListener('load', function() {
       // Now that the image has loaded make copy it to the texture.
       gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -207,23 +211,23 @@
         //   vertices.push(cubeColors[a][j]);
         // }
         for (var j=0; j < 3; j++) {
-          vertices.push(cubeNormals[a][j]);
+          vertices.push(-1.0 * cubeNormals[a][j]);
         }
         switch (indices[i]){
           case a:
-            vertices.push(0.0);
+            vertices.push((a-2.0)*0.125);
             vertices.push(0.0);
             break;
           case b:
-            vertices.push(0.0);
+            vertices.push((a-2.0)*0.125);
             vertices.push(1.0);
             break;
           case c:
-            vertices.push(1.0);
+            vertices.push((a-1.0)*0.125);
             vertices.push(1.0);
             break;
           case d:
-            vertices.push(1.0);
+            vertices.push((a-1.0)*0.125);
             vertices.push(0.0);
             break;
         }
@@ -289,7 +293,7 @@
         Math.cos(j) / 4 - 0.125,
         0.0,
 
-        1.0, 1.0, 1.0
+        0.2, 0.2, 0.6
       ];
 
       var vert3 = [
@@ -297,7 +301,7 @@
         Math.cos(j) / 6 - 0.125,
         0.0,
 
-        1.0, 1.0, 1.0
+        0.2, 0.2, 0.6
       ]
 
       vertices3 = vertices3.concat(vert1);
@@ -312,7 +316,7 @@
         Math.cos(j) / 4 + 0.125,
         0.0,
 
-        1.0, 1.0, 1.0
+        0.2, 0.2, 0.6
       ];
 
       var vert4 = [
@@ -320,17 +324,17 @@
         Math.cos(j) / 6 + 0.125,
         0.0,
 
-        1.0, 1.0, 1.0
+        0.2, 0.2, 0.6
       ]
       vertices3 = vertices3.concat(vert2);
       vertices3 = vertices3.concat(vert4);
     }
 
     var vert5 = [
-      0.25,0.125,0.0,   1.0, 1.0, 1.0,
-      (1/6),0.125,0.0,   1.0, 1.0, 1.0,
-      0.25,-0.125,0.0,  1.0, 1.0, 1.0,
-      (1/6),-0.125,0.0,  1.0, 1.0, 1.0,
+      0.25,0.125,0.0,   0.2, 0.2, 0.6,
+      (1/6),0.125,0.0,   0.2, 0.2, 0.6,
+      0.25,-0.125,0.0,  0.2, 0.2, 0.6,
+      (1/6),-0.125,0.0,  0.2, 0.2, 0.6,
     ];
 
     vertices3 = vertices3.concat(vert5);

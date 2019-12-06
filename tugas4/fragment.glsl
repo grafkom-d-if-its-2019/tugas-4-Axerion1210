@@ -17,6 +17,7 @@ void main() {
     gl_FragColor = vec4(fColor, 1.0);
   else if(mode == 0.0){
     // Arah cahaya = lokasi titik verteks - lokasi titik sumber cahaya
+    
     vec3 diffuseDirection = normalize(diffusePosition - fPosition);
     // Nilai intensitas cahaya = 
     //  nilai COS sudut antara arah datang cahaya dengan arah vektor normal =

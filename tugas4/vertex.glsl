@@ -46,14 +46,15 @@ void main() {
   }
   else if (mode == 0.0)
   {
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
-
     fTexCoord = vTexCoord;
 
     // Transfer vektor normal (yang telah ditransformasi) ke fragment shader
     fNormal = normalize(normalMatrix * vNormal);
 
     // Transfer posisi verteks
-    fPosition = vec3(modelMatrix * vec4(vPosition, 1.0));
+    fPosition = vec3(vec4(vPosition, 1.0));
+    
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+
   }
 }
